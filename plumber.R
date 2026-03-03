@@ -9,7 +9,7 @@ library(ggfocus)
 #* @apiTitle API Regressão Linear
 
 # Variável global
-df <- read.csv("dados/dados_regressao.csv")  # Recuperando dados anteriores
+df <- read.csv('dados/dados_regressao.csv')  # Recuperando dados anteriores
 modelo <- lm(y ~ x + as.factor(grupo), data = df)  # Ajustando modelo
 
 
@@ -23,7 +23,7 @@ modelo <- lm(y ~ x + as.factor(grupo), data = df)  # Ajustando modelo
 function(x, grupo, y) {
   nova_pessoa <- data.frame(x = as.numeric(x), grupo = grupo, y = as.numeric(y),
                             momento_registro = lubridate::now(), ID = max(df$ID) + 1)
-  readr::write_csv(nova_pessoa, "dados/dados_regressao.csv", append = TRUE)
+  readr::write_csv(nova_pessoa, 'dados/dados_regressao.csv', append = TRUE)
   df <<- rbind(df, nova_pessoa)
   modelo <<- lm(y ~ x + as.factor(grupo), data = df)
   return(nova_pessoa)
@@ -37,14 +37,14 @@ function(x, grupo, y) {
 #* @delete /data/delete_row
 function(ID) {
   if (grepl(':', ID)) {
-    ID <- as.numeric(unlist(strsplit(ID,":")))
+    ID <- as.numeric(unlist(strsplit(ID,':')))
     ID <- seq(ID[1], ID[2])
   }
   else {
-    ID <- as.numeric(unlist(strsplit(ID, ",")))
+    ID <- as.numeric(unlist(strsplit(ID, ',')))
   }
   df <<- df[!(df$ID %in% ID),]
-  readr::write_csv(df, "dados/dados_regressao.csv")
+  readr::write_csv(df, 'dados/dados_regressao.csv')
   modelo <<- lm(y ~ x + as.factor(grupo), data = df)
   return(df)
 }
@@ -61,7 +61,7 @@ function(ID) {
 function(ID, x, y, grupo) {
   df[df$ID == as.numeric(ID),] <<- data.frame(x = as.numeric(x), grupo = grupo, 
   y = as.numeric(y), momento_registro = lubridate::now(), ID = as.numeric(ID))
-  readr::write_csv(df, "dados/dados_regressao.csv")
+  readr::write_csv(df, 'dados/dados_regressao.csv')
   modelo <<- lm(y ~ x + as.factor(grupo), data = df)
   return(df[df$ID == as.numeric(ID),])
 }
@@ -75,12 +75,12 @@ function(ID, x, y, grupo) {
 function(focus = NULL) {
   grafico <- df %>% ggplot(aes(x = x, y = y, col = grupo, alpha = grupo, group = grupo)) +
     geom_point(alpha = 1) +
-    geom_smooth(method = "lm", se = FALSE) +
+    geom_smooth(method = 'lm', se = FALSE) +
     theme_bw() +
-    labs(title = "Gráfico de dispersão com a reta de regressão ajustada por categoria",
+    labs(title = 'Gráfico de dispersão com a reta de regressão ajustada por categoria',
          x = colnames(df)[1], y = colnames(df)[3])
   if (!(is.null(focus))) {
-    focus <- unlist(strsplit(gsub(" ", "",focus), ","))
+    focus <- unlist(strsplit(gsub(' ', '',focus), ','))
     grafico <- grafico +
       scale_alpha_focus(focus) +
       scale_color_focus(focus)
@@ -123,9 +123,9 @@ function() {
 #* @get /plot/residuals
 function() {
   grafico <- modelo %>% ggplot(aes(x = .fitted, y = .resid)) +
-    geom_point(col = "blue") +
-    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-    labs(title = "Resíduos x Valores preditos", x = "Valor Predito", y = "Resíduo") +
+    geom_point(col = 'blue') +
+    geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
+    labs(title = 'Resíduos x Valores preditos', x = 'Valor Predito', y = 'Resíduo') +
     theme_bw()
   print(grafico)
 }
@@ -138,9 +138,9 @@ function() {
 #* @get /plot/residuals_qq
 function() {
   grafico <- modelo %>% ggplot(aes(sample = .resid)) +
-    stat_qq(col="blue", size=2, alpha=0.6) +
-    stat_qq_line(col="red", size=1) +
-    labs(title = "QQ-Plot", x = "Quantis Teóricos", y = "Quantis Amostrais") +
+    stat_qq(col='blue', size=2, alpha=0.6) +
+    stat_qq_line(col='red', size=1) +
+    labs(title = 'QQ-Plot', x = 'Quantis Teóricos', y = 'Quantis Amostrais') +
     theme_bw()
   print(grafico)
 }
@@ -153,10 +153,10 @@ function() {
 #* @get /fit/p_values
 function() {
   resultado <- list(
-    beta0 = summary(modelo)$coefficients[1, "Pr(>|t|)"],       
-    beta1 = summary(modelo)$coefficients[2, "Pr(>|t|)"],          
-    beta2 = summary(modelo)$coefficients[3, "Pr(>|t|)"],          
-    beta3 = summary(modelo)$coefficients[4, "Pr(>|t|)"]
+    beta0 = summary(modelo)$coefficients[1, 'Pr(>|t|)'],       
+    beta1 = summary(modelo)$coefficients[2, 'Pr(>|t|)'],          
+    beta2 = summary(modelo)$coefficients[3, 'Pr(>|t|)'],          
+    beta3 = summary(modelo)$coefficients[4, 'Pr(>|t|)']
   )
   return(resultado)
 }
@@ -171,8 +171,8 @@ function() {
 #* @parser json
 #* @get /fit/pred
 function(x, grupo) {
-  x <- as.numeric(unlist(strsplit(x, ",")))
-  grupo <- unlist(strsplit(gsub(" ", "",grupo), ","))
+  x <- as.numeric(unlist(strsplit(x, ',')))
+  grupo <- unlist(strsplit(gsub(' ', '',grupo), ','))
   newdata <- data.frame(x, grupo)
   pred <- predict(modelo, newdata)
   return(pred)

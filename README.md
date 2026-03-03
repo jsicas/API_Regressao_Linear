@@ -1,193 +1,210 @@
 
+<div align="justify">
+
 # API_Regressao_Linear
 
-Esta API foi desenvolvida por Eric Pavarin Lima, João Victor Siqueira
-Rodrigues, Lara Maria Herrera Drugowick e Rodrigo Caldiron, como parte
-das atividades realizadas na disciplina de ME918-2S-2024 (Produto de
-Dados) do curso de Estatística da UNICAMP.
+API desenvolvida como parte das atividades realizadas na disciplina de
+ME918-2S-2024 (Produto de Dados) do curso de Estatística da UNICAMP.
 
-## Introdução
+# Introdução
 
-`API_Regressao_Linear` é uma interface que permite ao usuário interagir
-com um banco de dados, por meio de manipulações de adição, modificação e
-remoção de observações. Também possibilita ao usuário a utilização de um
-modelo de regressão linear que traz as estimativas dos parâmetros do
-modelo, suas significâncias estatísticas, predições para novos dados e
-gráficos de dispersão relacionados tanto à reta de regressão ajustada,
-quanto aos resíduos.
+A `API_Regressao_Linear` é uma interface que permite a interação do
+usuário com um banco de dados, possibilitando: adição, modificação e
+remoção de observações. Além disso, também torna possível ajustar um
+modelo de regressão linear ($y_i = \beta_0 + \sum_{i=1}^p\beta_i x_i$),
+disponibilizando as estimativas dos parâmetros do modelo, suas
+significâncias estatísticas, predições para novos dados e gráficos de
+dispersão do modelo ajustado e dos resíduos.
 
 Ela foi criada e desenvolvida a partir do pacote `plumber` do R (e
 testada através do `Swagger`) que, define uma estrutura de API a partir
 de rotas, facilitando a implementação e a verificação com testes para
-validar o comportamento das mesmas.
+validação do comportamento.
+
+# Rotas
+
+As rotas implementadas foram:
+
+- `/data/add_row`: Adicionar uma nova observação por requisição.
+  Necessário fornecer os argumentos `x`, `grupo` e`y`;
+- `/data/change_row`: Modifica uma única observação por requisição.
+  Necessário fornecer: `ID`, `x`, `y` e `grupo`;
+- `/data/delete_row`: Exclui observações com base na variável `ID`. As
+  observações podem ser excluídas uma a uma, por meio de intervalos ou
+  por meio de um vetor de índices;
+- `/fit/param`: Fornece as estimativas dos parâmetros da regressão em
+  formato JSON;
+- `/fit/residuals`: Retorna os resíduos da regressão em formato JSON;
+- `/fit/p_values`: Informa a significância estatística dos parâmetros em
+  formato JSON; `/fit/pred`: Realiza predição para novas observações,
+  retornando em formato JSON. Pode fazer predição para múltiplas
+  observações novas;
+- `/plot/lm`: Gera gráfico de dispersão com a reta de regressão
+  ajustada. Além disso, o argumento opcional `focus` destaca um ou mais
+  grupos indicados;
+- `/plot/residuals`: Realiza a requisição do gráfico de resíduos da
+  regressão contra os valores preditos;
+- `/plot/residuals_qq`: Realiza a requisição do gráfico QQ-plot.
 
 ## Uso
 
-Para exemplificação, considere o seguinte banco de dados simulado com
+Para exemplificar, considere o seguinte banco de dados simulado com
 cinco observações:
 
-    ##          x grupo        y    momento_registro ID
-    ## 1 5.354514     B 6.433922 2024-10-23 22:36:08  1
-    ## 2 6.308610     A 8.873692 2024-10-23 22:36:08  2
-    ## 3 6.739688     B 9.642285 2024-10-23 22:36:08  3
-    ## 4 3.741000     C 7.266051 2024-10-23 22:36:08  4
-    ## 5 3.720005     A 3.661662 2024-10-23 22:36:08  5
+    ##  ID    x grupo    y    momento_registro
+    ##   1 5.35     B 6.43 2026-03-03 17:12:22
+    ##   2 6.31     A 8.88 2026-03-03 17:12:22
+    ##   3 6.74     B 9.64 2026-03-03 17:12:22
+    ##   4 3.74     C 7.26 2026-03-03 17:12:22
+    ##   5 3.72     A 3.66 2026-03-03 17:12:22
 
-onde
+onde:
 
-- `x`: variável preditora de natureza númerica.
-- `grupo`:variável preditora categórica.
-- `y`:variável resposta.
+- `ID`: identificador da observação;
+- `x`: variável preditora númerica;
+- `grupo`:variável preditora categórica;
+- `y`:variável resposta;
 - `momento_registro`: horário em que a observação foi gerada.
-- `ID`: identificador responsável pela exclusividade da observação.
-
-## Rotas
 
 ### Dados
 
-`/data/add_row`: Rota responsável por adicionar uma nova observação por
-requisição, recebendo os seguintes argumentos:
+Adicionaremos uma linha ao banco apresentado anteriormente por meio da
+rota `/data/add_row`. Considerando a requisição
+`/data/add_row?x=5&grupo=A&y=10` (`x = 5`, `grupo = A`, `y = 10`):
 
-- `x`
-- `grupo`
-- `y`
+    ##  ID    x grupo     y    momento_registro
+    ##   1 5.35     B  6.43 2026-03-03 17:12:22
+    ##   2 6.31     A  8.88 2026-03-03 17:12:22
+    ##   3 6.74     B  9.64 2026-03-03 17:12:22
+    ##   4 3.74     C  7.26 2026-03-03 17:12:22
+    ##   5 3.72     A  3.66 2026-03-03 17:12:22
+    ##   6 5.00     A 10.00 2026-03-03 17:12:22
 
-Para exemplificar, considere a seguinte requisição
-`/data/add_row?x=5&grupo=A&y=10` (`x = 5`, `grupo = A`, `y = 10`).
-
-    ##          x grupo         y    momento_registro ID
-    ## 1 5.354514     B  6.433922 2024-10-23 22:36:08  1
-    ## 2 6.308610     A  8.873692 2024-10-23 22:36:08  2
-    ## 3 6.739688     B  9.642285 2024-10-23 22:36:08  3
-    ## 4 3.741000     C  7.266051 2024-10-23 22:36:08  4
-    ## 5 3.720005     A  3.661662 2024-10-23 22:36:08  5
-    ## 6 5.000000     A 10.000000 2024-10-23 22:36:08  6
-
-Além disso, mais duas rotas foram adicionadas para garantir melhor
-manutenção dos dados, já que estar limitado apenas à inserção de novas
-variáveis pode gerar problemas, como a impossibilidade de correção para
-a adição de uma informação errada.
-
-`/data/delete_row`: Rota que exclui observações de três maneiras
-diferentes, recebendo como argumento o `ID`. A primeira forma é feita
-excluindo uma única observação. Suponha que deseja-se excluir o
-`ID = 1`, então, a requisição é `/data/delete_row?ID=1`.
-
-    ##          x grupo         y    momento_registro ID
-    ## 2 6.308610     A  8.873692 2024-10-23 22:36:08  2
-    ## 3 6.739688     B  9.642285 2024-10-23 22:36:08  3
-    ## 4 3.741000     C  7.266051 2024-10-23 22:36:08  4
-    ## 5 3.720005     A  3.661662 2024-10-23 22:36:08  5
-    ## 6 5.000000     A 10.000000 2024-10-23 22:36:08  6
-
-Em certos casos, é preferível excluir uma sequência de observações, isso
-pode ser feito por meio da sequência `1:3` (isto é, as observações de 1
-à 3 estão sendo excluídas), cuja requisição é dada por
-`/data/delete_row?ID=1%3A4`.
-
-    ##          x grupo         y    momento_registro ID
-    ## 4 3.741000     C  7.266051 2024-10-23 22:36:08  4
-    ## 5 3.720005     A  3.661662 2024-10-23 22:36:08  5
-    ## 6 5.000000     A 10.000000 2024-10-23 22:36:08  6
-
-Por fim, a terceira maneira é utilizando vetores como `1, 3, 5`, com a
-requisição dada por `/data/delete_row?ID=1%2C3%2C5`.
-
-    ##         x grupo         y    momento_registro ID
-    ## 2 6.30861     A  8.873692 2024-10-23 22:36:08  2
-    ## 4 3.74100     C  7.266051 2024-10-23 22:36:08  4
-    ## 6 5.00000     A 10.000000 2024-10-23 22:36:08  6
-
-`/data/change_row`: Rota que modifica uma única observação por
-requisição. Para isso, é necessário especificar os argumentos:
-
-- `ID`
-- `x`
-- `y`
-- `grupo`
-
-Se o interesse é alterar a observação de `ID = 5` para `x = 5`,
-`grupo = C` e `y = 15`, tem-se que a requisição é
+Modificaremos uma linha por meio da rota `/data/change_row`. Se o
+interesse é alterar a observação de `ID = 5` para `x = 5`, `grupo = C` e
+`y = 15`, tem-se que a requisição é
 `/data/change_row?ID=5&x=5&grupo=C&y=15`.
 
-    ##          x grupo         y    momento_registro ID
-    ## 1 5.354514     B  6.433922 2024-10-23 22:36:08  1
-    ## 2 6.308610     A  8.873692 2024-10-23 22:36:08  2
-    ## 3 6.739688     B  9.642285 2024-10-23 22:36:08  3
-    ## 4 3.741000     C  7.266051 2024-10-23 22:36:08  4
-    ## 5 5.000000     C 15.000000 2024-10-23 22:36:08  5
-    ## 6 5.000000     A 10.000000 2024-10-23 22:36:08  6
+    ##  ID    x grupo     y    momento_registro
+    ##   1 5.35     B  6.43 2026-03-03 17:12:22
+    ##   2 6.31     A  8.88 2026-03-03 17:12:22
+    ##   3 6.74     B  9.64 2026-03-03 17:12:22
+    ##   4 3.74     C  7.26 2026-03-03 17:12:22
+    ##   5 5.00     C 15.00 2026-03-03 17:12:22
+    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+
+Faremos a exclusão utilizando as três formas mencionadas por meio da
+rota `/data/delete_row`:
+
+- Forma 1: Removendo uma única observação. Suponha que deseja-se excluir
+  a linha com `ID = 1`, então, a requisição para isso é
+  `/data/delete_row?ID=1`.
+
+<!-- -->
+
+    ##  ID    x grupo     y    momento_registro
+    ##   2 6.31     A  8.88 2026-03-03 17:12:22
+    ##   3 6.74     B  9.64 2026-03-03 17:12:22
+    ##   4 3.74     C  7.26 2026-03-03 17:12:22
+    ##   5 5.00     C 15.00 2026-03-03 17:12:22
+    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+
+- Forma 2: Sequência de observações. Em certos casos, é preferível
+  excluir uma sequência de observações, isso pode ser feito por meio da
+  sintaxe `INICIO:FIM`. Considere excluir das três primeiras observações
+  (`1:3`), então a requisição é dada por `/data/delete_row?ID=1%3A4`.
+
+<!-- -->
+
+    ##  ID    x grupo     y    momento_registro
+    ##   4 3.74     C  7.26 2026-03-03 17:12:22
+    ##   5 5.00     C 15.00 2026-03-03 17:12:22
+    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+
+- Forma 3: Vetor de posições. Por fim, também é possível utilizar
+  vetores, como `(1,3,5)`. Considerando o vetor anterior, a requisição é
+  dada por `/data/delete_row?ID=1%2C3%2C5`.
+
+<!-- -->
+
+    ##  ID    x grupo     y    momento_registro
+    ##   2 6.31     A  8.88 2026-03-03 17:12:22
+    ##   4 3.74     C  7.26 2026-03-03 17:12:22
+    ##   6 5.00     A 10.00 2026-03-03 17:12:22
 
 ### Inferência
 
-Considere que foi necessário adicionar mais observações no banco de
-dados para a análise inferêncial.
-
-`/fit/param`: Rota que fornece as estimativas dos parâmetros da
-regressão, e.g. `/fit/param`.
+Desta etapa em diante, o banco de dados simulado foi aumentado para 30
+observações. Com isso, através da rota `/fit/param`, temos os seguintes
+parâmetros estimados:
 
     ## {
-    ##   "beta_0": [-3.1872],
-    ##   "beta_1": [0.6248],
-    ##   "beta_2": [2.5642],
-    ##   "beta_3": [4.4997],
-    ##   "QME": [5.2567]
+    ##   "beta_0": [5.0281],
+    ##   "beta_1": [0.7544],
+    ##   "beta_2": [-3.8682],
+    ##   "beta_3": [-0.6875],
+    ##   "QME": [32.2284]
     ## }
 
-`/fit/residuals`: Rota que retorna todos os resíduos da regressão. Nesse
-exemplo é exibido apenas os seis primeiros, com requisição dada por
-`/fit/residuals`.
+Exibindo apenas os 10 primeiros resíduos com a requisição dada por
+`/fit/residuals`:
 
-    ## [-1.5131,-1.2313,-1.3551,-0.9376,-1.8813,-1.5385]
+    ## [-0.553,3.0135,1.7213,-2.3593,-1.2632,-1.1856,-3.868,-2.9005,-3.9731,-2.6392]
 
-`/fit/p_values`: Rota que informa sobre a significância estatística dos
-parâmetros, e.g. `/fit/p_values`.
+P-valores obtidos pela rota `/fit/p_values`:
 
     ## {
-    ##   "beta_0": [-3.1872],
-    ##   "beta_1": [0.6248],
-    ##   "beta_2": [2.5642],
-    ##   "beta_3": [4.4997],
-    ##   "QME": [5.2567]
+    ##   "beta_0": [5.0281],
+    ##   "beta_1": [0.7544],
+    ##   "beta_2": [-3.8682],
+    ##   "beta_3": [-0.6875],
+    ##   "QME": [32.2284]
     ## }
 
-`/fit/pred`: Rota que realiza predições para novas observações.
-Especificando na requisição `x = 10` e `grupo = B`,
-e.g. `/fit/pred?x=10&grupo=B`.
+Fazendo predição de `(x = 10, grupo = B)` pela rota `/fit/pred`, o que
+gera a requisição `/fit/pred?x=10&grupo=B`, resultando em:
 
-    ## [11.874]
+    ## [16.2475]
 
-Além disso, essa rota pode retornar mais de uma predição, caso a
-requisição seja `/fit/pred?x=10%2C20&grupo=B%2CA`, isto é, `x = 10, 20`
-e `grupo = B, A`.
+Além disso, essa rota pode retornar múltiplas predições. Por exemplo,
+considere os pares `(x = 10, grupo = A)` e `(x = 20, grupo = B)`, então,
+é possível fazer a predição de ambas observações por meio da requisição
+`/fit/pred?x=10%2C20&grupo=A%2CB`, obtendo:
 
-    ## [11.874,3.0613]
+    ## [12.5719,16.2475]
 
 ### Gráficos
 
-Considere que foi necessário adicionar mais observações ao banco de
-dados para a análise gráfica da regressão.
+Por meio da rota `/plot/lm`, tem-se o gráfico:
 
-`/plot/lm`: Rota responsável por gerar o gráfico de dispersão juntamente
-com a reta de regressão ajustada. Há um argumento opcional `focus` que
-destaca o grupo desejado. Caso não seja passado nenhum argumento, a
-chamada é `/plot/lm`.
+<p align="center">
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+<img src="README_files/figure-gfm/unnamed-chunk-15-1.png" width="75%" />
+</p>
 
-Supondo que queremos focar no grupo `A` a chamada é `/plot/lm?focus=A`.
-Além disso, mais de um grupo pode ser especificado utilizando a vírgula
-para separá-los.
+Além disso, também é possível focar em um grupo específico, por exemplo,
+o grupo `A`. Então a chamada é `/plot/lm?focus=A`. Além disso, mais de
+um grupo pode ser especificado utilizando a vírgula para separá-los.
 
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+<p align="center">
 
-`/plot/residuals`: Rota que realiza a requisição do gráfico de resíduos
-da regressão contra os valores preditos. A sua chamada é dada por
-`/plot/residuals`.
+<img src="README_files/figure-gfm/unnamed-chunk-16-1.png" width="75%" />
+</p>
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+Utilizando a chamada `/plot/residuals`, realiza-se a requisição do
+gráfico de resíduos da regressão contra os valores preditos obtendo:
 
-`/plot/residuals_qq`: Rota que realiza a requisição do gráfico QQ-plot.
-Sua chamada é dada por `/plot/residuals_qq`.
+<p align="center">
 
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+<img src="README_files/figure-gfm/unnamed-chunk-17-1.png" width="75%" />
+</p>
+
+Por fim, o gráfico QQ-plot pode ser requisitado através de
+`/plot/residuals_qq`, obtendo:
+
+<p align="center">
+
+<img src="README_files/figure-gfm/unnamed-chunk-18-1.png" width="75%" />
+</p>
+
+</div>
