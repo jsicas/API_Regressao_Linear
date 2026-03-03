@@ -11,10 +11,11 @@ ME918-2S-2024 (Produto de Dados) do curso de Estatística da UNICAMP.
 A `API_Regressao_Linear` é uma interface que permite a interação do
 usuário com um banco de dados, possibilitando: adição, modificação e
 remoção de observações. Além disso, também torna possível ajustar um
-modelo de regressão linear ($y_i = \beta_0 + \sum_{i=1}^p\beta_i x_i$),
-disponibilizando as estimativas dos parâmetros do modelo, suas
-significâncias estatísticas, predições para novos dados e gráficos de
-dispersão do modelo ajustado e dos resíduos.
+modelo de regressão linear
+($y_i = \beta_0 + \sum_{j=1}^p\beta_i x_{ij}$), disponibilizando as
+estimativas dos parâmetros do modelo, suas significâncias estatísticas,
+predições para novos dados e gráficos de dispersão do modelo ajustado e
+dos resíduos.
 
 Ela foi criada e desenvolvida a partir do pacote `plumber` do R (e
 testada através do `Swagger`) que, define uma estrutura de API a partir
@@ -52,11 +53,11 @@ Para exemplificar, considere o seguinte banco de dados simulado com
 cinco observações:
 
     ##  ID    x grupo    y    momento_registro
-    ##   1 5.35     B 6.43 2026-03-03 17:14:23
-    ##   2 6.31     A 8.88 2026-03-03 17:14:23
-    ##   3 6.74     B 9.64 2026-03-03 17:14:23
-    ##   4 3.74     C 7.26 2026-03-03 17:14:23
-    ##   5 3.72     A 3.66 2026-03-03 17:14:23
+    ##   1 5.35     B 6.43 2026-03-03 17:18:20
+    ##   2 6.31     A 8.88 2026-03-03 17:18:20
+    ##   3 6.74     B 9.64 2026-03-03 17:18:20
+    ##   4 3.74     C 7.26 2026-03-03 17:18:20
+    ##   5 3.72     A 3.66 2026-03-03 17:18:20
 
 onde:
 
@@ -73,12 +74,12 @@ rota `/data/add_row`. Considerando a requisição
 `/data/add_row?x=5&grupo=A&y=10` (`x = 5`, `grupo = A`, `y = 10`):
 
     ##  ID    x grupo     y    momento_registro
-    ##   1 5.35     B  6.43 2026-03-03 17:14:23
-    ##   2 6.31     A  8.88 2026-03-03 17:14:23
-    ##   3 6.74     B  9.64 2026-03-03 17:14:23
-    ##   4 3.74     C  7.26 2026-03-03 17:14:23
-    ##   5 3.72     A  3.66 2026-03-03 17:14:23
-    ##   6 5.00     A 10.00 2026-03-03 17:14:23
+    ##   1 5.35     B  6.43 2026-03-03 17:18:20
+    ##   2 6.31     A  8.88 2026-03-03 17:18:20
+    ##   3 6.74     B  9.64 2026-03-03 17:18:20
+    ##   4 3.74     C  7.26 2026-03-03 17:18:20
+    ##   5 3.72     A  3.66 2026-03-03 17:18:20
+    ##   6 5.00     A 10.00 2026-03-03 17:18:20
 
 Modificaremos uma linha por meio da rota `/data/change_row`. Se o
 interesse é alterar a observação de `ID = 5` para `x = 5`, `grupo = C` e
@@ -86,12 +87,12 @@ interesse é alterar a observação de `ID = 5` para `x = 5`, `grupo = C` e
 `/data/change_row?ID=5&x=5&grupo=C&y=15`.
 
     ##  ID    x grupo     y    momento_registro
-    ##   1 5.35     B  6.43 2026-03-03 17:14:23
-    ##   2 6.31     A  8.88 2026-03-03 17:14:23
-    ##   3 6.74     B  9.64 2026-03-03 17:14:23
-    ##   4 3.74     C  7.26 2026-03-03 17:14:23
-    ##   5 5.00     C 15.00 2026-03-03 17:14:23
-    ##   6 5.00     A 10.00 2026-03-03 17:14:23
+    ##   1 5.35     B  6.43 2026-03-03 17:18:20
+    ##   2 6.31     A  8.88 2026-03-03 17:18:20
+    ##   3 6.74     B  9.64 2026-03-03 17:18:20
+    ##   4 3.74     C  7.26 2026-03-03 17:18:20
+    ##   5 5.00     C 15.00 2026-03-03 17:18:20
+    ##   6 5.00     A 10.00 2026-03-03 17:18:20
 
 Faremos a exclusão utilizando as três formas mencionadas por meio da
 rota `/data/delete_row`:
@@ -103,11 +104,11 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   2 6.31     A  8.88 2026-03-03 17:14:23
-    ##   3 6.74     B  9.64 2026-03-03 17:14:23
-    ##   4 3.74     C  7.26 2026-03-03 17:14:23
-    ##   5 5.00     C 15.00 2026-03-03 17:14:23
-    ##   6 5.00     A 10.00 2026-03-03 17:14:23
+    ##   2 6.31     A  8.88 2026-03-03 17:18:20
+    ##   3 6.74     B  9.64 2026-03-03 17:18:20
+    ##   4 3.74     C  7.26 2026-03-03 17:18:20
+    ##   5 5.00     C 15.00 2026-03-03 17:18:20
+    ##   6 5.00     A 10.00 2026-03-03 17:18:20
 
 - Forma 2: Sequência de observações. Em certos casos, é preferível
   excluir uma sequência de observações, isso pode ser feito por meio da
@@ -117,9 +118,9 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   4 3.74     C  7.26 2026-03-03 17:14:23
-    ##   5 5.00     C 15.00 2026-03-03 17:14:23
-    ##   6 5.00     A 10.00 2026-03-03 17:14:23
+    ##   4 3.74     C  7.26 2026-03-03 17:18:20
+    ##   5 5.00     C 15.00 2026-03-03 17:18:20
+    ##   6 5.00     A 10.00 2026-03-03 17:18:20
 
 - Forma 3: Vetor de posições. Por fim, também é possível utilizar
   vetores, como `(1,3,5)`. Considerando o vetor anterior, a requisição é
@@ -128,9 +129,9 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   2 6.31     A  8.88 2026-03-03 17:14:23
-    ##   4 3.74     C  7.26 2026-03-03 17:14:23
-    ##   6 5.00     A 10.00 2026-03-03 17:14:23
+    ##   2 6.31     A  8.88 2026-03-03 17:18:20
+    ##   4 3.74     C  7.26 2026-03-03 17:18:20
+    ##   6 5.00     A 10.00 2026-03-03 17:18:20
 
 ### Inferência
 

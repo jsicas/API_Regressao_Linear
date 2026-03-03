@@ -26,7 +26,7 @@ bB <- 2; bC <- 3
 n <- 5
 x <- rpois(n, lambda = 4) + runif(n, -3, 3) |> round(2)
 grupo <- sample(LETTERS[1:3], size = n, replace = TRUE)
-y <- rnorm(n, mean = b0 + b1*x + bB*(grupo=="B") + bC*(grupo=="C"), sd = 2) |>
+y <- rnorm(n, mean = b0 + b1*x + bB*(grupo=='B') + bC*(grupo=='C'), sd = 2) |>
   round(2)
 db <- data.frame(ID = seq(1, length(x)), x = x, grupo = grupo, y = y,
                  momento_registro = lubridate::now())
@@ -39,7 +39,7 @@ API desenvolvida como parte das atividades realizadas na disciplina de ME918-2S-
 
 
 # Introdução
-A `API_Regressao_Linear` é uma interface que permite a interação do usuário com um banco de dados, possibilitando: adição, modificação e remoção de observações. Além disso, também torna possível ajustar um modelo de regressão linear ($y_i = \beta_0 + \sum_{i=1}^p\beta_i x_i$), disponibilizando as estimativas dos  parâmetros do modelo, suas significâncias estatísticas, predições para novos dados e gráficos de dispersão do modelo ajustado e dos resíduos.
+A `API_Regressao_Linear` é uma interface que permite a interação do usuário com um banco de dados, possibilitando: adição, modificação e remoção de observações. Além disso, também torna possível ajustar um modelo de regressão linear ($y_i = \beta_0 + \sum_{j=1}^p\beta_i x_{ij}$), disponibilizando as estimativas dos  parâmetros do modelo, suas significâncias estatísticas, predições para novos dados e gráficos de dispersão do modelo ajustado e dos resíduos.
 
 Ela foi criada e desenvolvida a partir do pacote `plumber` do R (e testada através do `Swagger`) que, define uma estrutura de API a partir de rotas, facilitando a implementação e a verificação com testes para validação do comportamento.
 
@@ -80,7 +80,7 @@ onde:
 Adicionaremos uma linha ao banco apresentado anteriormente por meio da rota `/data/add_row`. Considerando a requisição `/data/add_row?x=5&grupo=A&y=10` (`x = 5`, `grupo = A`, `y = 10`):
 
 ```{r}
-db[6,] <- data.frame(ID = 6, x = 5, grupo = "A", y = 10,
+db[6,] <- data.frame(ID = 6, x = 5, grupo = 'A', y = 10,
                      momento_registro = lubridate::now())
 print(db, row.names = FALSE)
 ```
@@ -149,10 +149,10 @@ P-valores obtidos pela rota `/fit/p_values`:
 
 ```{r}
 resultado <- list(
-    beta0 = summary(modelo_simulado)$coefficients[1, "Pr(>|t|)"],       
-    beta1 = summary(modelo_simulado)$coefficients[2, "Pr(>|t|)"],          
-    beta2 = summary(modelo_simulado)$coefficients[3, "Pr(>|t|)"],          
-    beta3 = summary(modelo_simulado)$coefficients[4, "Pr(>|t|)"]
+    beta0 = summary(modelo_simulado)$coefficients[1, 'Pr(>|t|)'],       
+    beta1 = summary(modelo_simulado)$coefficients[2, 'Pr(>|t|)'],          
+    beta2 = summary(modelo_simulado)$coefficients[3, 'Pr(>|t|)'],          
+    beta3 = summary(modelo_simulado)$coefficients[4, 'Pr(>|t|)']
   )
 toJSON(resultados, pretty = TRUE)
 ```
@@ -160,7 +160,7 @@ toJSON(resultados, pretty = TRUE)
 Fazendo predição de `(x = 10, grupo = B)` pela rota `/fit/pred`, o que gera a requisição `/fit/pred?x=10&grupo=B`, resultando em:
 
 ```{r}
-toJSON(predict(modelo_simulado, data.frame(x = 20, grupo = "B")))
+toJSON(predict(modelo_simulado, data.frame(x = 20, grupo = 'B')))
 ```
 
 Além disso, essa rota pode retornar múltiplas predições. Por exemplo, considere os pares `(x = 10, grupo = A)` e `(x = 20, grupo = B)`, então, é possível fazer a predição de ambas observações por meio da requisição `/fit/pred?x=10%2C20&grupo=A%2CB`, obtendo:
@@ -179,9 +179,9 @@ Por meio da rota `/plot/lm`, tem-se o gráfico:
 ```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = x, y = y, col = grupo)) +
     geom_point() +
-    geom_smooth(method = "lm", se = FALSE) +
+    geom_smooth(method = 'lm', se = FALSE) +
     theme_bw() +
-    labs(title = "Gráfico de dispersão com a reta de regressão ajustada por categoria",
+    labs(title = 'Gráfico de dispersão com a reta de regressão ajustada por categoria',
          x = colnames(db_grafico)[1], y = colnames(db_grafico)[3])
 ```
 </p>
@@ -193,12 +193,12 @@ Além disso, também é possível focar em um grupo específico, por exemplo, o 
 ```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = x, y = y, col = grupo, alpha = grupo, group = grupo)) +
     geom_point() +
-    geom_smooth(method = "lm", se = FALSE) +
+    geom_smooth(method = 'lm', se = FALSE) +
     theme_bw() +
-    labs(title = "Gráfico de dispersão com a reta de regressão ajustada por categoria",
+    labs(title = 'Gráfico de dispersão com a reta de regressão ajustada por categoria',
          x = colnames(db_grafico)[1], y = colnames(db_grafico)[3]) +
-      scale_alpha_focus("A") +
-      scale_color_focus("A")
+      scale_alpha_focus('A') +
+      scale_color_focus('A')
 ```
 </p>
 
@@ -207,9 +207,9 @@ Utilizando a chamada `/plot/residuals`, realiza-se a requisição do gráfico de
 <p align="center">
 ```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = fitted(modelo_simulado), y = residuals(modelo_simulado))) +
-  geom_point(col = "blue") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Resíduos x Valores preditos", x = "Valor Predito", y = "Resíduo") +
+  geom_point(col = 'blue') +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
+  labs(title = 'Resíduos x Valores preditos', x = 'Valor Predito', y = 'Resíduo') +
   theme_bw()
 ```
 </p>
@@ -219,9 +219,9 @@ Por fim, o gráfico QQ-plot pode ser requisitado através de `/plot/residuals_qq
 <p align="center">
 ```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(sample = residuals(modelo_simulado))) +
-  stat_qq(col="blue", size=2, alpha=0.6) +
-  stat_qq_line(col="red", size=1) +
-  labs(title = "QQ-Plot", x = "Quantis Teóricos", y = "Quantis Amostrais") +
+  stat_qq(col='blue', size=2, alpha=0.6) +
+  stat_qq_line(col='red', size=1) +
+  labs(title = 'QQ-Plot', x = 'Quantis Teóricos', y = 'Quantis Amostrais') +
   theme_bw()
 ```
 </p>
