@@ -176,7 +176,7 @@ Por meio da rota `/plot/lm`, tem-se o gráfico:
 
 <p align="center">
 
-```{r, warning = FALSE, message=FALSE, out.width='75%'}
+```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = x, y = y, col = grupo)) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE) +
@@ -190,7 +190,7 @@ Além disso, também é possível focar em um grupo específico, por exemplo, o 
 
 <p align="center">
 
-```{r, warning = FALSE, message=FALSE, out.width='75%'}
+```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = x, y = y, col = grupo, alpha = grupo, group = grupo)) +
     geom_point() +
     geom_smooth(method = "lm", se = FALSE) +
@@ -205,7 +205,7 @@ db_grafico %>% ggplot(aes(x = x, y = y, col = grupo, alpha = grupo, group = grup
 Utilizando a chamada `/plot/residuals`, realiza-se a requisição do gráfico de resíduos da regressão contra os valores preditos obtendo:
 
 <p align="center">
-```{r, warning = FALSE, message=FALSE, out.width='75%'}
+```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(x = fitted(modelo_simulado), y = residuals(modelo_simulado))) +
   geom_point(col = "blue") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
@@ -217,7 +217,7 @@ db_grafico %>% ggplot(aes(x = fitted(modelo_simulado), y = residuals(modelo_simu
 Por fim, o gráfico QQ-plot pode ser requisitado através de `/plot/residuals_qq`, obtendo:
 
 <p align="center">
-```{r, warning = FALSE, message=FALSE, out.width='75%'}
+```{r, warning = FALSE, message=FALSE, out.width='65%'}
 db_grafico %>% ggplot(aes(sample = residuals(modelo_simulado))) +
   stat_qq(col="blue", size=2, alpha=0.6) +
   stat_qq_line(col="red", size=1) +

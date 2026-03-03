@@ -52,11 +52,11 @@ Para exemplificar, considere o seguinte banco de dados simulado com
 cinco observações:
 
     ##  ID    x grupo    y    momento_registro
-    ##   1 5.35     B 6.43 2026-03-03 17:12:22
-    ##   2 6.31     A 8.88 2026-03-03 17:12:22
-    ##   3 6.74     B 9.64 2026-03-03 17:12:22
-    ##   4 3.74     C 7.26 2026-03-03 17:12:22
-    ##   5 3.72     A 3.66 2026-03-03 17:12:22
+    ##   1 5.35     B 6.43 2026-03-03 17:14:23
+    ##   2 6.31     A 8.88 2026-03-03 17:14:23
+    ##   3 6.74     B 9.64 2026-03-03 17:14:23
+    ##   4 3.74     C 7.26 2026-03-03 17:14:23
+    ##   5 3.72     A 3.66 2026-03-03 17:14:23
 
 onde:
 
@@ -73,12 +73,12 @@ rota `/data/add_row`. Considerando a requisição
 `/data/add_row?x=5&grupo=A&y=10` (`x = 5`, `grupo = A`, `y = 10`):
 
     ##  ID    x grupo     y    momento_registro
-    ##   1 5.35     B  6.43 2026-03-03 17:12:22
-    ##   2 6.31     A  8.88 2026-03-03 17:12:22
-    ##   3 6.74     B  9.64 2026-03-03 17:12:22
-    ##   4 3.74     C  7.26 2026-03-03 17:12:22
-    ##   5 3.72     A  3.66 2026-03-03 17:12:22
-    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+    ##   1 5.35     B  6.43 2026-03-03 17:14:23
+    ##   2 6.31     A  8.88 2026-03-03 17:14:23
+    ##   3 6.74     B  9.64 2026-03-03 17:14:23
+    ##   4 3.74     C  7.26 2026-03-03 17:14:23
+    ##   5 3.72     A  3.66 2026-03-03 17:14:23
+    ##   6 5.00     A 10.00 2026-03-03 17:14:23
 
 Modificaremos uma linha por meio da rota `/data/change_row`. Se o
 interesse é alterar a observação de `ID = 5` para `x = 5`, `grupo = C` e
@@ -86,12 +86,12 @@ interesse é alterar a observação de `ID = 5` para `x = 5`, `grupo = C` e
 `/data/change_row?ID=5&x=5&grupo=C&y=15`.
 
     ##  ID    x grupo     y    momento_registro
-    ##   1 5.35     B  6.43 2026-03-03 17:12:22
-    ##   2 6.31     A  8.88 2026-03-03 17:12:22
-    ##   3 6.74     B  9.64 2026-03-03 17:12:22
-    ##   4 3.74     C  7.26 2026-03-03 17:12:22
-    ##   5 5.00     C 15.00 2026-03-03 17:12:22
-    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+    ##   1 5.35     B  6.43 2026-03-03 17:14:23
+    ##   2 6.31     A  8.88 2026-03-03 17:14:23
+    ##   3 6.74     B  9.64 2026-03-03 17:14:23
+    ##   4 3.74     C  7.26 2026-03-03 17:14:23
+    ##   5 5.00     C 15.00 2026-03-03 17:14:23
+    ##   6 5.00     A 10.00 2026-03-03 17:14:23
 
 Faremos a exclusão utilizando as três formas mencionadas por meio da
 rota `/data/delete_row`:
@@ -103,11 +103,11 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   2 6.31     A  8.88 2026-03-03 17:12:22
-    ##   3 6.74     B  9.64 2026-03-03 17:12:22
-    ##   4 3.74     C  7.26 2026-03-03 17:12:22
-    ##   5 5.00     C 15.00 2026-03-03 17:12:22
-    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+    ##   2 6.31     A  8.88 2026-03-03 17:14:23
+    ##   3 6.74     B  9.64 2026-03-03 17:14:23
+    ##   4 3.74     C  7.26 2026-03-03 17:14:23
+    ##   5 5.00     C 15.00 2026-03-03 17:14:23
+    ##   6 5.00     A 10.00 2026-03-03 17:14:23
 
 - Forma 2: Sequência de observações. Em certos casos, é preferível
   excluir uma sequência de observações, isso pode ser feito por meio da
@@ -117,9 +117,9 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   4 3.74     C  7.26 2026-03-03 17:12:22
-    ##   5 5.00     C 15.00 2026-03-03 17:12:22
-    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+    ##   4 3.74     C  7.26 2026-03-03 17:14:23
+    ##   5 5.00     C 15.00 2026-03-03 17:14:23
+    ##   6 5.00     A 10.00 2026-03-03 17:14:23
 
 - Forma 3: Vetor de posições. Por fim, também é possível utilizar
   vetores, como `(1,3,5)`. Considerando o vetor anterior, a requisição é
@@ -128,9 +128,9 @@ rota `/data/delete_row`:
 <!-- -->
 
     ##  ID    x grupo     y    momento_registro
-    ##   2 6.31     A  8.88 2026-03-03 17:12:22
-    ##   4 3.74     C  7.26 2026-03-03 17:12:22
-    ##   6 5.00     A 10.00 2026-03-03 17:12:22
+    ##   2 6.31     A  8.88 2026-03-03 17:14:23
+    ##   4 3.74     C  7.26 2026-03-03 17:14:23
+    ##   6 5.00     A 10.00 2026-03-03 17:14:23
 
 ### Inferência
 
@@ -179,7 +179,7 @@ Por meio da rota `/plot/lm`, tem-se o gráfico:
 
 <p align="center">
 
-<img src="README_files/figure-gfm/unnamed-chunk-15-1.png" width="75%" />
+<img src="README_files/figure-gfm/unnamed-chunk-15-1.png" width="65%" />
 </p>
 
 Além disso, também é possível focar em um grupo específico, por exemplo,
@@ -188,7 +188,7 @@ um grupo pode ser especificado utilizando a vírgula para separá-los.
 
 <p align="center">
 
-<img src="README_files/figure-gfm/unnamed-chunk-16-1.png" width="75%" />
+<img src="README_files/figure-gfm/unnamed-chunk-16-1.png" width="65%" />
 </p>
 
 Utilizando a chamada `/plot/residuals`, realiza-se a requisição do
@@ -196,7 +196,7 @@ gráfico de resíduos da regressão contra os valores preditos obtendo:
 
 <p align="center">
 
-<img src="README_files/figure-gfm/unnamed-chunk-17-1.png" width="75%" />
+<img src="README_files/figure-gfm/unnamed-chunk-17-1.png" width="65%" />
 </p>
 
 Por fim, o gráfico QQ-plot pode ser requisitado através de
@@ -204,7 +204,7 @@ Por fim, o gráfico QQ-plot pode ser requisitado através de
 
 <p align="center">
 
-<img src="README_files/figure-gfm/unnamed-chunk-18-1.png" width="75%" />
+<img src="README_files/figure-gfm/unnamed-chunk-18-1.png" width="65%" />
 </p>
 
 </div>
