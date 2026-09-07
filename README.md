@@ -22,9 +22,9 @@ testada através do `Swagger`) que, define uma estrutura de API a partir
 de rotas, facilitando a implementação e a verificação com testes para
 validação do comportamento.
 
-# Rodas
+# Rotas
 
-Rodas implementados:
+Rotas implementados:
 
 - `/data/add_row`: Adicionar uma nova observação por requisição.
   Necessário fornecer os argumentos `x`, `grupo` e`y`;
